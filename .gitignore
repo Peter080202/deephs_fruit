@@ -120,3 +120,5 @@ core/config.py
 *.ckpt
 /publish/extract_fruit/wandb/
 data/
+
+wandb/

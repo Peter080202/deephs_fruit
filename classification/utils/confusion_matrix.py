@@ -17,6 +17,8 @@ def create_confusion_matrix(y_pred, y_true, labels, normalize=True):
               values_format=None)
 
     disp.ax_.set_title("Normalized confusion matrix" if normalize else "Confusion matrix")
+    disp.figure_.savefig("confusion_matrix.png")
+    print("Saved something")
     return disp
 
 

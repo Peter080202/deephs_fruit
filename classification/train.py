@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import pytorch_lightning as lightning
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -24,6 +25,16 @@ from core.run_utils import (
     get_slurm_job_path,
     get_wandb_log_dir,
 )
+
+from core.util import (
+    display_hyper_spectral_data,
+    display_all_bands,
+    plot_spectra,
+    get_n_spectra,
+    get_wavelengths_for,
+    mask_background
+)
+
 import core.util as util
 
 AUGMENTATION_CONFIG_TRAIN = {
@@ -83,6 +94,12 @@ class DeepHsModule(lightning.LightningModule):
                                                     transform=transforms.Compose(
                                                         common_preprocessing),
                                                     input_size=self.hparams['input_size'])
+            # Visualize a random hyperspectral cube from the training dataset
+            sample_cube, _, _ = self.train_dataset[0]  # take first sample
+            masked_cube = mask_background(sample_cube.numpy())
+            if False:
+                display_hyper_spectral_data(masked_cube)  # animated view of all bands
+                display_all_bands(masked_cube)            # all bands vertically
         elif stage == 'test':
             self.test_dataset = HyperspectralDataset(self.hparams['classification_type'], self.test_records,
                                                      data_path=self.hparams['data_path'],
@@ -259,6 +276,16 @@ class DeepHsModule(lightning.LightningModule):
                                  for o in outputs]).mean()
         test_ys = torch.cat([o['test_ys']
                              for o in outputs]).reshape(-1, 2).cpu().numpy()
+        
+        test_data_samples = []
+        for i in range(len(self.test_dataset)):
+            test_data_samples.append(self.test_dataset[i][0].numpy())
+            # Example: plot spectra of first 10 test samples
+        for cube in test_data_samples and False:
+            masked_cube = mask_background(cube)
+            spectra = get_n_spectra(masked_cube, 20, _only_obj=True)
+            bands = get_wavelengths_for(self.hparams['camera_type'])
+            plot_spectra(spectra, bands)
 
         # log only in the first worker
         if self.trainer.is_global_zero:
@@ -363,7 +390,7 @@ def main(hparams):
     print("Hparams: %s" % hparams)
 
     model = DeepHsModule(hparams)
-    logger = WandbLogger(offline=not hparams['online_logging'], save_dir=hparams['log_path'],
+    logger = WandbLogger(offline=not hparams['online_logging'], dir=hparams['log_path'],
                          project='deephs') if 'logger' not in hparams.keys() else hparams['logger']
 
     early_stop_callback = EarlyStopping(
