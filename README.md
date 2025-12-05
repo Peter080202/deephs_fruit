@@ -9,6 +9,32 @@
 
 Here you can find the dataset and the official implementation of the HS-CNN network with an optimized training pipeline.
 
+### Commands to start training
+
+Create virtual Python environment
+
+```sh
+python3 -m venv venv
+```
+
+Activate venv
+
+```sh
+source /home/pschweigkofler/HIPPA/.venv/bin/activate
+```
+
+Install modules from requirements.txt
+
+```sh
+pip install -r requirements.txt
+```
+
+Start training with parameters
+
+```sh
+PYTHONPATH=$PYTHONPATH:. python3 classification/train.py --data_path /home/pschweigkofler/deephs_fruit/dataset --model deephs_net --fruit apple --classification_type infection --seed 23312323
+````
+
 ## Data set (v2)
 The dataset is [here](https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/) or as [torrent](https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/DeepHS-Fruit-2023-Datasets.torrent) available. 
 It contains recordings of:
