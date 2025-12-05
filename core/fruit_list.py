@@ -17,7 +17,7 @@ def get_for_camera_type(_l, _camera_type: CameraType):
 def get_for_fruit(_l, _fruit: Fruit):
     _r = []
 
-    if _fruit == Fruit.ALL:
+    if _fruit == Fruit.ALL or _fruit == Fruit.APPLE:
         return _l
 
     for _e in _l:

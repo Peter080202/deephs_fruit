@@ -3,6 +3,7 @@ import os
 import numpy as np
 import spectral.io.envi as envi
 import spectral
+import tifffile as tiff
 
 VIS_BANDS = [397.66, 400.28, 402.9, 405.52, 408.13, 410.75, 413.37, 416.0, 418.62, 421.24, 423.86, 426.49, 429.12,
              431.74, 434.37, 437.0, 439.63, 442.26, 444.89, 447.52, 450.16, 452.79, 455.43, 458.06, 460.7, 463.34,
@@ -73,6 +74,15 @@ NIR_BANDS = [919.678, 922.9758, 926.2727, 929.5688, 932.864, 936.1584, 939.452, 
              1682.7758, 1685.9391, 1689.1022, 1692.2649, 1695.4274, 1698.5896, 1701.7515, 1704.9131, 1708.0745,
              1711.2356, 1714.3964, 1717.557, 1720.7173, 1723.8773, 1727.0371]
 
+
+def load_tif(fname, origin):
+    path = os.path.join(origin, fname)
+    
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Could not find file: {path}")
+    
+    data = tiff.imread(path)
+    return data
 
 def load_envi(_fname, origin):
     path = os.path.join(origin, _fname)

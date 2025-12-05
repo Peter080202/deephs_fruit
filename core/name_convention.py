@@ -7,6 +7,7 @@ import core.spectral_io as spectral_io
 
 class Side(enum.Enum):
     FRONT = 'front'
+    SIDE = 'side'
     BACK = 'back'
 
 
@@ -77,8 +78,14 @@ class Fruit(enum.Enum):
     MANGO = 'Mango'
     KAKI = 'Kaki'
     PAPAYA = 'Papaya'
+    APPLE = 'Apple'
     ALL = 'All'
 
+class AppleType(enum.Enum):
+    GRANNY_SMITH = 'Granny Smith'
+    JOYA = 'Joya'
+    ENVY = 'Envy'
+    GOLDEN_DELICIOUS = 'Golden Delicious'
 
 class ID(enum.Enum):
     UNKNOWN = '?'
@@ -482,16 +489,18 @@ class PapayaLabel(SweetFruitLabel):
 
 class FruitRecord:
     def __init__(self, fruit: Fruit, side: Side, day: Day, id: ID, camera_type: CameraType,
-                 label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None):
+                 label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None,
+                 filename: Optional[str] = None):
         self.fruit = fruit
         self.id = id
         self.side = side
         self.day = day
         self.camera_type = camera_type
         self.label = label
+        self.filename = filename
 
     def get_file_path(self):
-        return get_file_path(self.fruit, self.side, self.day, self.id, self.camera_type)
+        return self.filename
 
     def get_name(self):
         return get_name(self.fruit, self.id, self.side, self.day)
@@ -505,8 +514,9 @@ class FruitRecord:
         if self.camera_type in (CameraType.VIS, CameraType.NIR,
                                 CameraType.VIS_COR):
             if is_already_referenced:
-                header, data = spectral_io.load_envi(
+                data = spectral_io.load_tif(
                     self.get_file_path(), _origin)
+                return None, data
             else:
                 header, data = spectral_io.load_referenced_envi(
                     self.get_file_path(), _origin)

@@ -36,6 +36,8 @@ def str2cameratype(v):
 def str2fruit(v):
     if isinstance(v, name_convention.Fruit):
         return v
+    if v.lower() == 'apple':
+        return name_convention.Fruit.APPLE
     if v.lower() == 'avocado':
         return name_convention.Fruit.AVOCADO
     elif v.lower() == 'kiwi':
