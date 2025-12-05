@@ -219,8 +219,6 @@ def get_records(fruit, camera_type, classification_type,
 
     assert len(records) > 0
 
-    rest_records, test_records = fruit_list.extract_test_data(records)
-    train_records, val_records = fruit_list.extract_val_data(rest_records)
     n = len(records)
     n_test = int(n * 0.1)
     n_val = int(n * 0.1)
@@ -228,14 +226,8 @@ def get_records(fruit, camera_type, classification_type,
     test_set = records[:n_test]
     val_set = records[n_test:n_test+n_val]
     train_set = records[n_test+n_val:]
-
-    print("After test filter:", len(test_set))
-    print("After val filter:", len(val_set))
-    print("After train filter:", len(train_set))
     
     return train_set, val_set, test_set
-
-    return train_records, val_records, test_records
 
 
 def add_border(_obj):

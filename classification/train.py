@@ -301,6 +301,8 @@ class DeepHsModule(lightning.LightningModule):
                 labels = ["Too hard", "Perfect", "Too soft"]
             elif self.hparams['classification_type'] == ClassificationType.SUGAR:
                 labels = ["Not sweet", "Perfect", "Too sweet"]
+            elif self.hparams['classification_type'] == ClassificationType.INFECTION:
+                labels = ["Not infected", "Infected"]
 
             log_confusion_matrix(
                 self.logger, test_ys[:, 0], test_ys[:, 1], labels=labels)

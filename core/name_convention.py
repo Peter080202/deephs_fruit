@@ -344,7 +344,7 @@ class AvocadoLabel:
         self.init_weight = _init_weight
         self.end_weight = _end_weight
         self.storage_days = _storage_days
-        self.firmness = _firmness  # in g / cm^2
+        self.firmness = _firmness
         self.ripeness_state = _ripeness_state
         self.comment = _comment
 
@@ -489,13 +489,14 @@ class PapayaLabel(SweetFruitLabel):
 
 class FruitRecord:
     def __init__(self, fruit: Fruit, side: Side, day: Day, id: ID, camera_type: CameraType,
-                 label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None,
+                 classtype: str, label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None,
                  filename: Optional[str] = None):
         self.fruit = fruit
         self.id = id
         self.side = side
         self.day = day
         self.camera_type = camera_type
+        self.classtype = classtype
         self.label = label
         self.filename = filename
 
@@ -555,6 +556,7 @@ class ClassificationType(enum.Enum):
     RIPENESS = 'ripeness'
     FIRMNESS = 'firmness'
     SUGAR = 'sugar'
+    INFECTION = 'infection'
 
 
 def label2text(l, _english=False):
