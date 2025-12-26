@@ -8,6 +8,7 @@ import core.spectral_io as spectral_io
 class Side(enum.Enum):
     FRONT = 'front'
     BACK = 'back'
+    SIDE = 'side'
 
 
 class Day(enum.Enum):
@@ -77,6 +78,7 @@ class Fruit(enum.Enum):
     MANGO = 'Mango'
     KAKI = 'Kaki'
     PAPAYA = 'Papaya'
+    APPLE = 'Apple'
     ALL = 'All'
 
 
@@ -301,6 +303,10 @@ class SugarLevel(enum.Enum):
     READY = 'ready'
     TOO_SWEET = 'too_sweet'
 
+class InfectionLevel(enum.Enum):
+    NOT_INFECTED = 'not_infected'
+    INFECTED = 'infected'
+
 
 def sugar2int(_ripeness_state: SugarLevel):
     if _ripeness_state == SugarLevel.NOT_SWEET:
@@ -330,6 +336,12 @@ def sugar2color(_ripeness: SugarLevel):
 
     return 'b'
 
+class AppleLabel:
+    def __init__(self, _infection_type):
+        self.infection_type = _infection_type
+
+    def get_infection_level(self) -> InfectionLevel:
+        return InfectionLevel.INFECTED if self.infection_type is 'Infected' else InfectionLevel.NOT_INFECTED
 
 class AvocadoLabel:
     def __init__(self, _init_weight: int, _end_weight: int, _storage_days: int, _firmness: int,
@@ -482,16 +494,19 @@ class PapayaLabel(SweetFruitLabel):
 
 class FruitRecord:
     def __init__(self, fruit: Fruit, side: Side, day: Day, id: ID, camera_type: CameraType,
-                 label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None):
+                 classtype: Optional[str] = None, label: Optional[Union[AvocadoLabel, SweetFruitLabel]] = None,
+                 filename: Optional[str] = None):
         self.fruit = fruit
         self.id = id
         self.side = side
         self.day = day
         self.camera_type = camera_type
+        self.classtype = classtype
         self.label = label
+        self.filename = filename
 
     def get_file_path(self):
-        return get_file_path(self.fruit, self.side, self.day, self.id, self.camera_type)
+        return self.filename
 
     def get_name(self):
         return get_name(self.fruit, self.id, self.side, self.day)
@@ -505,8 +520,9 @@ class FruitRecord:
         if self.camera_type in (CameraType.VIS, CameraType.NIR,
                                 CameraType.VIS_COR):
             if is_already_referenced:
-                header, data = spectral_io.load_envi(
+                data = spectral_io.load_tif(
                     self.get_file_path(), _origin)
+                return None, data
             else:
                 header, data = spectral_io.load_referenced_envi(
                     self.get_file_path(), _origin)
@@ -545,6 +561,7 @@ class ClassificationType(enum.Enum):
     RIPENESS = 'ripeness'
     FIRMNESS = 'firmness'
     SUGAR = 'sugar'
+    INFECTION = 'infection'
 
 
 def label2text(l, _english=False):

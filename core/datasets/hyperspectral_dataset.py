@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import torch
 
+from classification.dataset_generator import generate_apple_records
 from core.name_convention import *
 from core.measurements import *
 import core.util as util
@@ -36,6 +37,7 @@ class HyperspectralDataset(Dataset):
         print("# Preload data")
         self.fruit_data = {}
         for r in self.records:
+            print("here")
             self.fruit_data[r] = prepare_fruit(
                 r, self.data_path, input_size=self.input_size)
         print("# done.")
@@ -50,6 +52,8 @@ class HyperspectralDataset(Dataset):
         if self.classification_type == ClassificationType.SUGAR:
             states = [SugarLevel.NOT_SWEET,
                       SugarLevel.READY, SugarLevel.TOO_SWEET]
+        if self.classification_type == ClassificationType.INFECTION:
+            states = [InfectionLevel.INFECTED, InfectionLevel.NOT_INFECTED]
 
         def get_label(record):
             if self.classification_type == ClassificationType.RIPENESS:
@@ -58,6 +62,8 @@ class HyperspectralDataset(Dataset):
                 return record.label.get_firmness_level()
             if self.classification_type == ClassificationType.SUGAR:
                 return record.label.get_sugar_level()
+            if self.classification_type == ClassificationType.INFECTION:
+                return record.label.get_infection_level()
 
         max_count = 0
         for s in states:
@@ -211,6 +217,24 @@ def get_records(fruit, camera_type, classification_type,
                 use_new_recordings=True
                ):
 
+    if fruit is Fruit.APPLE:
+        records = generate_apple_records('/Users/peterschweigkofler/workspace/original/deephs_fruit/test')
+        assert len(records) > 0
+
+        n = len(records)
+        n_test = int(n * 0.1)
+        n_val = int(n * 0.1)
+        
+        test_set = records[:n_test]
+        val_set = records[n_test:n_test+n_val]
+        train_set = records[n_test+n_val:]
+
+        print("After test filter:", len(test_set))
+        print("After val filter:", len(val_set))
+        print("After train filter:", len(train_set))
+        
+        return train_set, val_set, test_set
+    
     full_set = all_fruits_new if use_new_recordings else all_fruits
 
     if fruit == Fruit.ALL and not allow_all_fruit_types:

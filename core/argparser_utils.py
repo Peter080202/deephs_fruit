@@ -46,6 +46,8 @@ def str2fruit(v):
         return name_convention.Fruit.KAKI
     elif v.lower() == 'papaya':
         return name_convention.Fruit.PAPAYA
+    elif v.lower() == 'apple':
+        return name_convention.Fruit.APPLE
     elif v.lower() == 'all':
         return name_convention.Fruit.ALL
     else:
@@ -82,5 +84,8 @@ def str2classification_type(v):
 
     if v.lower() == name_convention.ClassificationType.SUGAR.value:
         return name_convention.ClassificationType.SUGAR
+    
+    if v.lower() == name_convention.ClassificationType.INFECTION.value:
+        return name_convention.ClassificationType.INFECTION
 
     return name_convention.ID("%02i" % int(v))
